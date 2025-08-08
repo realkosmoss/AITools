@@ -18,6 +18,10 @@ if __name__ == "__main__":
             except Exception as e:
                 print("...", e)
                 continue
+            print("context:", Perchance.MessagesHandler.get())
             print("Removed 1.")
             continue
-        print("[Perchance]", Perchance.generate(user_input.strip())) # if its empty just try again ig
+        perchance_response = Perchance.generate(user_input.strip())
+        if not perchance_response:
+            perchance_response = Perchance.generate(user_input.strip())
+        print("[Perchance]", perchance_response) # if its empty just try again ig
