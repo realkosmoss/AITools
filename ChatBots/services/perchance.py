@@ -22,8 +22,10 @@ class MessagesHandler(): # Gotta add lore handling, character handling, bla bla 
         self.messages.append((role, message))
 
     def remove(self, count: int = 1) -> None:
-        for _ in range(min(count, len(self.messages))):
-            self.messages.pop()
+        for _ in range(count):
+            if len(self.messages) >= 2:
+                self.messages.pop()  # Remove bot reply
+                self.messages.pop()  # Remove user message
 
     def clear(self) -> None:
         self.messages.clear()
@@ -163,10 +165,7 @@ class PerchanceChatBot:
             create_response = self.session.post(generate_url, params=create_params, json=request_payload)
             if 'invalid_key' in create_response.text:
                 raise Exception('Chat could not be generated (invalid key).')
-        
-        # Response went through so add user message
-        self.MessagesHandler.add(message, self.username)
-
+            
         # Shitty ass way to get the full text content
         final_text = ''
         for line in create_response.text.splitlines():
@@ -182,7 +181,9 @@ class PerchanceChatBot:
             final_text += message
             if data.get('final'):
                 break
-        self.MessagesHandler.add(final_text, 'Bot')
+        if final_text: # Check if empty response.
+            self.MessagesHandler.add(message, self.username)
+            self.MessagesHandler.add(final_text, 'Bot')
         return final_text
 
 # Example
