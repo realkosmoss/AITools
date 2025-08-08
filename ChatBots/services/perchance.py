@@ -65,7 +65,7 @@ class PerchanceChatBot:
 
             page.on("request", request_handler)
 
-            await page.goto('https://perchance.org/ai-text-to-image-generator')
+            await page.goto('https://perchance.org/ai-chat')
 
             iframe_element = await page.query_selector('xpath=//iframe[@src]')
             if not iframe_element:
@@ -77,7 +77,7 @@ class PerchanceChatBot:
                 await browser.close()
                 raise RuntimeError("Failed to get iframe content frame")
 
-            await frame.click('xpath=//button[@id="generateButtonEl"]')
+            await frame.click('xpath=//*[@id="sendMessageBtn"]') # Did it work? I dont know but it seems so lmao.
 
             key = None
             pattern = r'userKey=([a-f\d]{64})'
@@ -98,13 +98,15 @@ class PerchanceChatBot:
 
             return key
 
-    def _check_cached_key(self):
+    def _check_cached_key(self, force_new=False):
         try:
+            if force_new:
+                return None
             with open('perchance-last-key.txt', 'r') as file:
                 key = file.readline().strip()
                 if key:
                     # Verify if key is still valid
-                    verification_url = 'https://image-generation.perchance.org/api/checkVerificationStatus'
+                    verification_url = 'https://text-generation.perchance.org/api/checkUserVerificationStatus'
                     params = {
                         'userKey': key,
                         '__cacheBust': random.random()
@@ -120,8 +122,8 @@ class PerchanceChatBot:
         with open('perchance-last-key.txt', 'w') as file:
             file.write(key)
 
-    def get_access_code(self):
-        key = self._check_cached_key()
+    def get_access_code(self, force_new=False):
+        key = self._check_cached_key(force_new)
         if key:
             return key
 
@@ -143,41 +145,45 @@ class PerchanceChatBot:
             '__cache_bust': random.random()
         }
         request_payload = {
-            "instruction": self.MessagesHandler.get(),
-            "startWith": f"{self.username}: {message}\n\nBot:",
-            "stopSequences": [
-                "\n\n",
-                f"\{self.username}:",
-                "\nBot:"
+            'instruction': self.MessagesHandler.get(),
+            'startWith': f'{self.username}: {message}\n\nBot:',
+            'stopSequences': [
+                '\n\n',
+                f'\{self.username}:',
+                '\nBot:'
             ],
-            "generatorName": "ai-character-chat",
-            "startWithTokenCount": 12,
-            "instructionTokenCount": 974
+            'generatorName': 'ai-character-chat',
+            'startWithTokenCount': 12,
+            'instructionTokenCount': 974
         }
         create_response = self.session.post(generate_url, params=create_params, json=request_payload)
         if 'invalid_key' in create_response.text:
-            raise Exception('Chat could not be generated (invalid key).')
+            user_key = self.get_access_code(force_new=True)
+            create_params['userKey'] = user_key
+            create_response = self.session.post(generate_url, params=create_params, json=request_payload)
+            if 'invalid_key' in create_response.text:
+                raise Exception('Chat could not be generated (invalid key).')
         
         # Shitty ass way to get the full text content
-        final_text = ""
+        final_text = ''
         for line in create_response.text.splitlines():
             if not line.strip():
                 continue
                 
-            data = json.loads(line.replace("data:", ""))
+            data = json.loads(line.replace('data:', ''))
 
-            message = data.get("text")
+            message = data.get('text')
             if not message:
                 continue
 
             final_text += message
-            if data.get("final"):
+            if data.get('final'):
                 break
 
         return final_text
 
 # Example
-if __name__ == "__main__":
+if __name__ == '__main__':
     chatbot = PerchanceChatBot(username='Anon') # You can change your name here. Default is 'Anon'
-    message = chatbot.generate("hi")
+    message = chatbot.generate('hi')
     print(message)
