@@ -8,7 +8,7 @@ if __name__ == "__main__":
         # Handle commands?!
         message_lower = user_input.lower()
         if message_lower == "clear":
-            Perchance.clear()
+            Perchance.MessagesHandler.clear()
             print("Cleared messages.")
             continue
         if "remove" in message_lower:
