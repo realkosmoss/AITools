@@ -133,7 +133,7 @@ class PerchanceChatBot:
         self._save_key(key)
         return key
     
-    def generate(self, message):
+    def generate(self, message: str):
         generate_url = 'https://text-generation.perchance.org/api/generate'
 
         user_key = self.get_access_code()
@@ -164,6 +164,9 @@ class PerchanceChatBot:
             if 'invalid_key' in create_response.text:
                 raise Exception('Chat could not be generated (invalid key).')
         
+        # Response went through so add user message
+        self.MessagesHandler.add(message, self.username)
+
         # Shitty ass way to get the full text content
         final_text = ''
         for line in create_response.text.splitlines():
@@ -179,7 +182,7 @@ class PerchanceChatBot:
             final_text += message
             if data.get('final'):
                 break
-
+        self.MessagesHandler.add(final_text, 'Bot')
         return final_text
 
 # Example
