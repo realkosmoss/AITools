@@ -1,0 +1,4 @@
+cryptography
+curl_cffi
+cloudscraper
+patchright
