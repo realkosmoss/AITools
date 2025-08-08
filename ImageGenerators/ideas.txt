@@ -1,2 +1,0 @@
-ideas for this is to be an universal as fuck image generator api.
-might generate accounts every image, it should do everything to get the image.
