@@ -175,5 +175,6 @@ class DeepAI:
             raise Exception("[DeepAI] Well, non 200 status_code.")
 
 if __name__ == "__main__":
-    deepai = DeepAI(handle_messages_list=True)
+    deepai = DeepAI()
+
     print(deepai.generate("hi how are you?!"))
