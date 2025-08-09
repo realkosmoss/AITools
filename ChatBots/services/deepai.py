@@ -89,6 +89,12 @@ class MessagesHandler:
     def __init__(self):
         self.messages = []
 
+    def clear(self):
+        self.messages.clear()
+
+    def remove(self):
+        self.messages.pop()
+
     def add(self, message: str, role: str = "user") -> None:
         """Adds a message to the context."""
         self.messages.append({"role": role, "content": message})
