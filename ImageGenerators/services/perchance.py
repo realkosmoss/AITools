@@ -38,7 +38,7 @@ class PerchanceImageGenerator:
             'unrealistic, animated, 3d, sketches, (text), low-quality, deformed, extra limbs, blurry, bad art, (logo), watermark, blurred, cut off, extra fingers, bad quality, distortion of proportions, deformed fingers, elongated body, cropped image, deformed hands, deformed legs, deformed face, twisted fingers, double image, long neck, extra limb, plastic, disfigured, mutation, sloppy, ugly, pixelated, bad hands, aliasing, overexposed, oversaturated, burnt image, fuzzy, poor quality, deformed arms'
         )
     }
-    def __init__(self, resolution='512x768', guidance_scale=7):
+    def __init__(self, resolution='512x768', guidance_scale=7, debug=False):
         self.resolution = resolution
         self.guidance_scale = guidance_scale
         self.session = cloudscraper.CloudScraper()
@@ -58,12 +58,13 @@ class PerchanceImageGenerator:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
         }
         self.session.headers.update(self.headers)
+        self.debug = debug
 
     async def _fetch_user_key(self):
         url_data = []
 
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=False)
             page = await browser.new_page()
 
             def request_handler(request):
@@ -188,9 +189,11 @@ class PerchanceImageGenerator:
                         image_id = data['imageId']
                         break
                     else:
-                        print(f"Attempt {retries+1}: No imageId found, retrying...")
+                        if self.debug:
+                            print(f"[perchance] Attempt {retries+1}: No imageId found, retrying...")
                 except Exception as e:
-                    print(f"Attempt {retries+1}: JSON parsing error or other exception: {e}")
+                    if self.debug:
+                        print(f"[perchance] Attempt {retries+1}: JSON parsing error or other exception: {e}")
 
                 retries += 1
                 sleep(8)
