@@ -3,14 +3,16 @@ from ImageGenerators.services.vheer import Vheer
 from ImageGenerators.services.writecream import WriteCream
 
 from ChatBots.services.perchance import PerchanceChatBot
+from ChatBots.services.deepai import DeepAI
 
 import os
 import sys
 import time
 
+# "init" colors
 os.system("")
 
-# ANSI color codes
+# color codes
 MAGENTA = "\033[95m"
 CYAN = "\033[96m"
 GREEN = "\033[92m"
@@ -44,6 +46,7 @@ def print_menu():
     print(f" {YELLOW}3.{WHITE} Writecream")
     print(f"\n{CYAN}{BOLD}Chat Bots:{RESET}")
     print(f" {YELLOW}4.{WHITE} Perchance")
+    print(f" {YELLOW}5.{WHITE} DeepAI")
 
 def main() -> None:
     print_banner()
@@ -104,10 +107,38 @@ def main() -> None:
 
                 perchance_response = perchanceChatBot.generate(user_input) or perchanceChatBot.generate(user_input)
                 print(f"{WHITE}Bot:{RESET} {perchance_response}")
+        elif choice == "5":
+            print(f"{MAGENTA}{BOLD}Commands:{RESET}")
+            print(f" {YELLOW}clear{WHITE} – Clears all context")
+            print(f" {YELLOW}remove{WHITE} – Removes last messages")
+            print(f" {YELLOW}break{WHITE} – Exit chat mode")
+            DeepAIChatBot = DeepAI(handle_messages_list=True)
 
+            while True:
+                user_input = input(f"{CYAN}You:{RESET} ").strip()
+                message_lower = user_input.lower()
+
+                if message_lower == "clear":
+                    DeepAIChatBot.MessagesHandler.clear()
+                    print(f"{GREEN}Messages cleared.{RESET}")
+                    continue
+
+                if message_lower.startswith("remove"):
+                    try:
+                        DeepAIChatBot.MessagesHandler.remove() # User message
+                        DeepAIChatBot.MessagesHandler.remove() # AI Message
+                        print(f"{GREEN}removed (2) message(s).{RESET}")
+                    except Exception as e:
+                        print(f"{YELLOW}Error:{RESET} {e}")
+                    continue
+
+                if message_lower == "break":
+                    break
+
+                perchance_response = DeepAIChatBot.generate(user_input) or DeepAIChatBot.generate(user_input)
+                print(f"{WHITE}Bot:{RESET} {perchance_response}")
         else:
             print(f"{YELLOW}Invalid option, try again.{RESET}")
 
 if __name__ == "__main__":
     main()
-
