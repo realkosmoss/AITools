@@ -63,7 +63,7 @@ class PerchanceImageGenerator:
         url_data = []
 
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=False)
+            browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
 
             def request_handler(request):
@@ -153,13 +153,13 @@ class PerchanceImageGenerator:
 
         return prompt_query, negative_prompt_query
 
-    def generate(self, amount=1, prompt='RANDOM', negative_prompt='', style='RANDOM'):
+    def generate(self, prompt='RANDOM', amount=1, negative_prompt='', style='RANDOM'):
         create_url = 'https://image-generation.perchance.org/api/generate'
         download_url = 'https://image-generation.perchance.org/api/downloadTemporaryImage'
 
         prompt_query, negative_prompt_query = self._build_prompts(prompt, style, negative_prompt)
 
-        for idx in range(1, amount + 1):
+        for idx in range(1, int(amount) + 1):
             user_key = self.get_access_code()
 
             create_params = {
@@ -198,7 +198,6 @@ class PerchanceImageGenerator:
 
             if not image_id:
                 raise Exception("Failed to get imageId after retries.")
-
 
             download_url = f"{download_url}?{urlencode({'imageId': image_id})}"
             
