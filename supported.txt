@@ -2,5 +2,5 @@ vheer.com/ai-text-to-image
 writecream.com/ai-image-generator-free-no-sign-up/
 perchance.org/image-generator-professional
 
-https://perchance.org/ai-chat
-https://deepai.org/chat/ai-code
+perchance.org/ai-chat
+deepai.org/chat/ai-code
