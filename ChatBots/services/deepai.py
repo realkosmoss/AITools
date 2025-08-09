@@ -155,11 +155,9 @@ class DeepAI:
 
         headers["api-key"] = self.tryitApiKey
 
-        self.MessagesHandler.add(prompt, "user")
-
         form_data = {
             "chat_style": "chat",
-            "chatHistory": json.dumps(self.MessagesHandler.get()),
+            "chatHistory": json.dumps(self.MessagesHandler.get() + [{"role": "user", "content": prompt}]),
             "model": self.model,
             "hacker_is_stinky": "very_stinky",
         }
@@ -176,5 +174,4 @@ class DeepAI:
 
 if __name__ == "__main__":
     deepai = DeepAI()
-
     print(deepai.generate("hi how are you?!"))
