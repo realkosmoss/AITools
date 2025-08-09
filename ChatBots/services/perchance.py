@@ -104,7 +104,7 @@ class PerchanceChatBot:
         try:
             if force_new:
                 return None
-            with open('perchance-last-key.txt', 'r') as file:
+            with open('chat-perchance-last-key.txt', 'r') as file:
                 key = file.readline().strip()
                 if key:
                     # Verify if key is still valid
@@ -121,7 +121,7 @@ class PerchanceChatBot:
         return None
 
     def _save_key(self, key):
-        with open('perchance-last-key.txt', 'w') as file:
+        with open('chat-perchance-last-key.txt', 'w') as file:
             file.write(key)
 
     def get_access_code(self, force_new=False):

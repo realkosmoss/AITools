@@ -15,7 +15,7 @@ def upload_image_link(session: cloudscraper.CloudScraper, image_url: str):
     r = session.post(
         'https://freeimage.host/api/1/upload',
         data={
-            'key': '6d207e02198a847aa98d0a2a901485a5',
+            'key': '6d207e02198a847aa98d0a2a901485a5', # umm shouldnt be an issue right?
             'action': 'upload',
             'format': 'json'
         },
@@ -107,7 +107,7 @@ class PerchanceImageGenerator:
 
     def _check_cached_key(self):
         try:
-            with open('perchance-last-key.txt', 'r') as file:
+            with open('img-perchance-last-key.txt', 'r') as file:
                 key = file.readline().strip()
                 if key:
                     # Verify if key is still valid
@@ -124,7 +124,7 @@ class PerchanceImageGenerator:
         return None
 
     def _save_key(self, key):
-        with open('perchance-last-key.txt', 'w') as file:
+        with open('img-perchance-last-key.txt', 'w') as file:
             file.write(key)
 
     def get_access_code(self):
