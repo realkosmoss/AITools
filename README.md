@@ -7,3 +7,4 @@
 
 ### Chat bots
 - [perchance.org/ai-chat](https://perchance.org/ai-chat)
+- [deepai.org/chat/ai-code](https://deepai.org/chat/ai-code)
