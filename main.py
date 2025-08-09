@@ -8,7 +8,6 @@ import os
 import sys
 import time
 
-# Enable ANSI colors in Windows
 os.system("")
 
 # ANSI color codes
@@ -111,3 +110,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
