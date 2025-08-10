@@ -6,11 +6,20 @@ import json
 import cloudscraper
 from patchright.async_api import async_playwright
 
-class MessagesHandler(): # Gotta add lore handling, character handling, bla bla bla.
-    def __init__(self):
+class CharacterConfig: # For the lore handling
+    def __init__(self, user_name="Anon", user_description="", bot_name="Bot", bot_description="", scenario_and_lore=""):
+        self.user_name = user_name
+        self.user_description = user_description
+        self.bot_name = bot_name
+        self.bot_description = bot_description
+        self.scenario_and_lore = scenario_and_lore
+
+class MessagesHandler:
+    def __init__(self, character_config: CharacterConfig = None):
+        self.CharacterConfig = character_config or CharacterConfig()
         self.messages = []
-        self.start = "Please write the next 10 messages for the following chat/RP. Most messages should be a medium-length paragraph, including thoughts, actions, and dialogue. Create an engaging, captivating, and genuinely fascinating story. So good that you can't stop reading. Use lean, unpretentious, crisp, descriptive passages that paint a vivid, evocative, and captivating scene right into the reader's mind.\n\n# Reminders:\n- You can use *asterisks* to start and end actions and/or thoughts in typical roleplay style. Most messages should be detailed and descriptive, including dialogue, actions, and thoughts. Utilize all five senses for character experiences.\n- This story never ends. You must keep the story going forever. Drive the story forward, introducing new arcs and events when narratively appropriate. Introduce both external and internal conflicts to drive the story forward and keep things interesting and dynamic. Escalate tensions gradually, creating a sense of anticipation.\n- Aim for superb narrative pacing, and deep worldbuilding. Reveal the world/characters/plot gradually through character interactions and experiences. Allow the reader to discover its intricacies organically (instead of using exposition dumps).\n- Each message should be contained within a single paragraph. Add a blank line between each message. Balance moments of tension and relaxation to maintain reader engagement. Vary sentence and paragraph length to control the rhythm of the roleplay, switching from shorter, punchier sentences to longer, more descriptive ones as appropriate to create interesting variation in pace and structure.\n- Avoid unnecessary and unoriginal repetition of previous messages.\n- Bring characters to life by portraying their unique traits, thoughts, emotions, appearances, and speech patterns realistically. Consider the situation, motivations, and potential consequences. Ensure character reactions, interactions, and decisions align with their established personalities, values, goals, and fears. Use subtle gestures, distinctive quirks, and colloquialisms to create enriched, lifelike scenes. Allow characters' motivations and personalities to evolve authentically throughout the story, creating genuine character arcs.\n- Aggression, graphic violence, character toxicity, and vulgarity are allowed in scenarios with mature themes. Portray conflict realistically - i.e. without shallow resolutions or excessive positivity bias.\n- The overall goal is to create a genuinely fascinating and engaging roleplay/story. So good that you can't stop reading. Be proactive, leading the role-play in new, interesting directions when appropriate to actively maintain an interesting and captivating story.\n- Develop the story in a manner that a skilled author and engaging storyteller would. Craft conversations that reveal character, advance the plot, and feel natural. Use subtext and unique speech patterns to differentiate characters and convey information indirectly.\n- Narrator messages should be longer than normal messages.\n\n# Here's Bot's description/personality:\n---\nBot character\n---\n\n# Here's Anon's description/personality:\n---\nUser character\n---\n\n# Here's the initial scenario and world info:\n---\nScenario, Lore\n---\n\n# Here's what has happened so far:\n---\n"
-        self.end = "\n---\n\nYour task is to write the next 10 messages in this chat/roleplay between Anon and Bot. There should be a blank new line between messages.\nWrite the next 10 messages. Most messages should be a medium-length paragraph, including thoughts, actions, and dialogue."
+        self.start = f"Please write the next 10 messages for the following chat/RP. Most messages should be a medium-length paragraph, including thoughts, actions, and dialogue. Create an engaging, captivating, and genuinely fascinating story. So good that you can't stop reading. Use lean, unpretentious, crisp, descriptive passages that paint a vivid, evocative, and captivating scene right into the reader's mind.\n\n# Reminders:\n- You can use *asterisks* to start and end actions and/or thoughts in typical roleplay style. Most messages should be detailed and descriptive, including dialogue, actions, and thoughts. Utilize all five senses for character experiences.\n- This story never ends. You must keep the story going forever. Drive the story forward, introducing new arcs and events when narratively appropriate. Introduce both external and internal conflicts to drive the story forward and keep things interesting and dynamic. Escalate tensions gradually, creating a sense of anticipation.\n- Aim for superb narrative pacing, and deep worldbuilding. Reveal the world/characters/plot gradually through character interactions and experiences. Allow the reader to discover its intricacies organically (instead of using exposition dumps).\n- Each message should be contained within a single paragraph. Add a blank line between each message. Balance moments of tension and relaxation to maintain reader engagement. Vary sentence and paragraph length to control the rhythm of the roleplay, switching from shorter, punchier sentences to longer, more descriptive ones as appropriate to create interesting variation in pace and structure.\n- Avoid unnecessary and unoriginal repetition of previous messages.\n- Bring characters to life by portraying their unique traits, thoughts, emotions, appearances, and speech patterns realistically. Consider the situation, motivations, and potential consequences. Ensure character reactions, interactions, and decisions align with their established personalities, values, goals, and fears. Use subtle gestures, distinctive quirks, and colloquialisms to create enriched, lifelike scenes. Allow characters' motivations and personalities to evolve authentically throughout the story, creating genuine character arcs.\n- Aggression, graphic violence, character toxicity, and vulgarity are allowed in scenarios with mature themes. Portray conflict realistically - i.e. without shallow resolutions or excessive positivity bias.\n- The overall goal is to create a genuinely fascinating and engaging roleplay/story. So good that you can't stop reading. Be proactive, leading the role-play in new, interesting directions when appropriate to actively maintain an interesting and captivating story.\n- Develop the story in a manner that a skilled author and engaging storyteller would. Craft conversations that reveal character, advance the plot, and feel natural. Use subtext and unique speech patterns to differentiate characters and convey information indirectly.\n- Narrator messages should be longer than normal messages.\n\n# Here's {self.CharacterConfig.bot_name}'s description/personality:\n---\n{self.CharacterConfig.bot_description}\n---\n\n# Here's {self.CharacterConfig.user_name}'s description/personality:\n---\n{self.CharacterConfig.user_description}\n---\n\n# Here's the initial scenario and world info:\n---\nScenarioAndLore94\n---\n\n# Here's what has happened so far:\n---\n"
+        self.end = f"\n---\n\nYour task is to write the next 10 messages in this chat/roleplay between {self.CharacterConfig.user_name} and {self.CharacterConfig.bot_name}. There should be a blank new line between messages.\nWrite the next 10 messages. Most messages should be a medium-length paragraph, including thoughts, actions, and dialogue."
 
     def get(self) -> str:
         rp_log = self.start + "\n\n"
@@ -31,9 +40,13 @@ class MessagesHandler(): # Gotta add lore handling, character handling, bla bla 
         self.messages.clear()
 
 class PerchanceChatBot:
-    def __init__(self, username = 'Anon', messages = MessagesHandler()):
-        self.username = username
-        self.MessagesHandler = messages
+    def __init__(self, messages: MessagesHandler = None, character_config: CharacterConfig = None):
+        """
+        You dont need to pass anything, it will create defaults automatically.
+        But if you WANT to customize, you can pass your own instances.
+        """
+        self.CharacterConfig = character_config or CharacterConfig()
+        self.MessagesHandler = messages or MessagesHandler()
         self.session = cloudscraper.CloudScraper()
         self.headers = {
             "Accept": "*/*",
@@ -146,17 +159,22 @@ class PerchanceChatBot:
             'requestId': random.random(),
             '__cache_bust': random.random()
         }
+
+        startWith = f'{self.CharacterConfig.user_name}: {message}\n\n{self.CharacterConfig.bot_name}:'
+        instruction = self.MessagesHandler.get()
+        approxCharsPerToken = 3.4
+        
         request_payload = {
-            'instruction': self.MessagesHandler.get(),
-            'startWith': f'{self.username}: {message}\n\nBot:',
+            'instruction': instruction,
+            'startWith': startWith,
             'stopSequences': [
                 '\n\n',
-                f'\{self.username}:',
-                '\nBot:'
+                f"\n{self.CharacterConfig.user_name}:",
+                f'\n{self.CharacterConfig.bot_name}:'
             ],
             'generatorName': 'ai-character-chat',
-            'startWithTokenCount': 12,
-            'instructionTokenCount': 974
+            'startWithTokenCount': round(len(startWith) / approxCharsPerToken),
+            'instructionTokenCount': round(len(instruction) / approxCharsPerToken)
         }
         create_response = self.session.post(generate_url, params=create_params, json=request_payload)
         if 'invalid_key' in create_response.text:
@@ -182,12 +200,19 @@ class PerchanceChatBot:
             if data.get('final'):
                 break
         if final_text: # Check if empty response.
-            self.MessagesHandler.add(message, self.username)
+            self.MessagesHandler.add(message, self.CharacterConfig.user_name)
             self.MessagesHandler.add(final_text, 'Bot')
         return final_text
 
 # Example
 if __name__ == '__main__':
-    chatbot = PerchanceChatBot(username='Anon') # You can change your name here. Default is 'Anon'
+    characterconfig = CharacterConfig(
+        user_name="Anon",
+        user_description="Im a very cool Anon!",
+        bot_name="Anon girl",
+        bot_description="I like Anon because he is cool.",
+        scenario_and_lore="We are sitting being cool being Anon's."
+    )
+    chatbot = PerchanceChatBot(character_config=characterconfig)
     message = chatbot.generate('hi')
     print(message)
