@@ -2,7 +2,7 @@ from ImageGenerators.services.perchance import PerchanceImageGenerator
 from ImageGenerators.services.vheer import Vheer
 from ImageGenerators.services.writecream import WriteCream
 
-from ChatBots.services.perchance import PerchanceChatBot
+from ChatBots.services.perchance import PerchanceChatBot, CharacterConfig
 from ChatBots.services.deepai import DeepAI
 
 import os
@@ -78,11 +78,33 @@ def main() -> None:
             print(f"{GREEN}Result:{RESET} {writecream.generate(prompt)}")
 
         elif choice == "4":
+            while True:
+                yesorno = input(f"{CYAN}Want to specify character lore? (Can leave most of them empty.): {RESET}")
+                if "yes" in yesorno.strip().lower():
+                    user_name = input("Your name: ")
+                    user_description = input("Your description: ")
+                    bot_name = input("Bots name: ")
+                    bot_description = input("Bots description: ")
+                    scenario_and_lore = input("Scenario and lore: ")
+                    characterconfig = CharacterConfig(
+                        user_name=user_name,
+                        user_description=user_description,
+                        bot_name=bot_name,
+                        bot_description=bot_description,
+                        scenario_and_lore=scenario_and_lore
+                    )
+                    break
+                elif "no" in yesorno.strip().lower():
+                    characterconfig = CharacterConfig()
+                    break
+                else:
+                    print(f"{YELLOW}Invalid option, try again.{RESET}")
+
             print(f"{MAGENTA}{BOLD}Commands:{RESET}")
             print(f" {YELLOW}clear{WHITE} – Clears all context")
             print(f" {YELLOW}remove N{WHITE} – Removes last N messages")
             print(f" {YELLOW}break{WHITE} – Exit chat mode")
-            perchanceChatBot = PerchanceChatBot()
+            perchanceChatBot = PerchanceChatBot(character_config=characterconfig)
 
             while True:
                 user_input = input(f"{CYAN}You:{RESET} ").strip()
@@ -125,8 +147,8 @@ def main() -> None:
 
                 if message_lower.startswith("remove"):
                     try:
-                        DeepAIChatBot.MessagesHandler.remove() # User message
                         DeepAIChatBot.MessagesHandler.remove() # AI Message
+                        DeepAIChatBot.MessagesHandler.remove() # User message
                         print(f"{GREEN}removed (2) message(s).{RESET}")
                     except Exception as e:
                         print(f"{YELLOW}Error:{RESET} {e}")
