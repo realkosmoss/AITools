@@ -1,7 +1,14 @@
-from services.perchance import PerchanceChatBot
+from services.perchance import PerchanceChatBot, CharacterConfig
 
 if __name__ == "__main__":
-    Perchance = PerchanceChatBot() # automatic message handling
+    characterconfig = CharacterConfig(
+        user_name="Anon",
+        user_description="Im a very cool Anon!",
+        bot_name="Anon girl",
+        bot_description="I like Anon because he is cool.",
+        scenario_and_lore="We are sitting being cool being Anon's."
+    )
+    Perchance = PerchanceChatBot(character_config=characterconfig) # automatic message handling
 
     while True:
         user_input = input("Chat prompt: ")
