@@ -128,7 +128,7 @@ def main() -> None:
                     break
 
                 perchance_response = perchanceChatBot.generate(user_input) or perchanceChatBot.generate(user_input)
-                print(f"{WHITE}Bot:{RESET} {perchance_response}")
+                print(f"{WHITE}{perchanceChatBot.CharacterConfig.bot_name}:{RESET} {perchance_response}")
         elif choice == "5":
             print(f"{MAGENTA}{BOLD}Commands:{RESET}")
             print(f" {YELLOW}clear{WHITE} – Clears all context")
