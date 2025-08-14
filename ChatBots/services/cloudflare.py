@@ -1,6 +1,5 @@
 from curl_cffi import requests
 import time, json
-import cloudscraper
 import random, string
 
 def Kx(alphabet: str, size: int):
