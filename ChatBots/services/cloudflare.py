@@ -68,6 +68,9 @@ class Messages:
             }]
         })
     
+    def remove(self):
+        self.messages.pop()
+    
     def _hi(self, role, content) -> list:
         return [{
             "role": role,
