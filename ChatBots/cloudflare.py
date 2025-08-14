@@ -130,26 +130,23 @@ class Models:
 class Payload:
     @staticmethod
     def generate(
-                 id: int,
-                 lora = None,
-                 max_tokens = 2048,
-                 messages: list = None,
-                 model = Models.llama_4_scout_17b_16e_instruct,
-                 stream = True,
-                 system_message = "You are a helpful assistant",
-                 tools = [] # dk yet
-                 ) -> str:
-        return {
+        id: int,
+        messages: list = None,
+        **kwargs
+    ) -> dict:
+        payload = {
             "id": id,
-            "lora": lora,
-            "max_tokens": max_tokens,
+            "lora": None,
+            "max_tokens": 2048,
             "messages": messages,
-            "model": model,
-            "stream": stream,
-            "system_message": system_message,
-            "tools": tools
+            "model": Models.llama_4_scout_17b_16e_instruct,
+            "stream": True,
+            "system_message": "You are a helpful assistant",
+            "tools": []
         }
-
+        payload.update(kwargs)
+        return payload
+    
 class Cloudflare:
     def __init__(self):
         self.session = requests.Session(impersonate="chrome", headers=headers)
@@ -158,11 +155,11 @@ class Cloudflare:
         self.id = hm()
         self.messages = Messages()
     
-    def generate(self, prompt, api=False) -> str | dict:
+    def generate(self, prompt, api=False, **kwargs) -> str | dict:
         """api=True returns a dict with messageId, text, and token usage."""
         # Build payload
         messages = self.messages.get() + self.messages._hi(role="user", content=prompt)
-        payload = Payload.generate(id=self.id, messages=messages)
+        payload = Payload.generate(id=self.id, messages=messages, **kwargs)
 
         resp = self.session.post(
             "https://playground.ai.cloudflare.com/api/inference",
@@ -176,7 +173,6 @@ class Cloudflare:
                 headers=api_headers,
                 json=payload
             )
-        print(resp.status_code)
 
         message_id = None
         chunks = []
@@ -221,5 +217,18 @@ class Cloudflare:
         return ai_response
 
 if __name__ == "__main__":
-    cloudflare = Cloudflare()
-    print(cloudflare.generate("hi!", api=True))
+    cf = Cloudflare()
+    response = cf.generate(
+        "Hello!",
+        max_tokens=690,
+        model=Models.llama_4_scout_17b_16e_instruct,
+        stream=True,
+        system_message="You are an Llama 4 scout 17b. You always brag about how cool your model is."
+    )
+    print(response)
+    # or just
+    response = cf.generate(
+        "Hello!",
+        model=Models.llama_4_scout_17b_16e_instruct,
+    )
+    print(response)
