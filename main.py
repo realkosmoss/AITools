@@ -4,6 +4,7 @@ from ImageGenerators.services.writecream import WriteCream
 
 from ChatBots.services.perchance import PerchanceChatBot, CharacterConfig
 from ChatBots.services.deepai import DeepAI
+from ChatBots.services.cloudflare import Cloudflare
 
 import os
 import sys
@@ -47,6 +48,7 @@ def print_menu():
     print(f"\n{CYAN}{BOLD}Chat Bots:{RESET}")
     print(f" {YELLOW}4.{WHITE} Perchance")
     print(f" {YELLOW}5.{WHITE} DeepAI")
+    print(f" {YELLOW}6.{WHITE} Cloudflare")
 
 def main() -> None:
     print_banner()
@@ -157,8 +159,35 @@ def main() -> None:
                 if message_lower == "break":
                     break
 
-                perchance_response = DeepAIChatBot.generate(user_input) or DeepAIChatBot.generate(user_input)
-                print(f"{WHITE}Bot:{RESET} {perchance_response}")
+                response = DeepAIChatBot.generate(user_input) or DeepAIChatBot.generate(user_input)
+                print(f"{WHITE}Bot:{RESET} {response}")
+        elif choice == "6":
+            print(f"{MAGENTA}{BOLD}Commands:{RESET}")
+            print(f" {YELLOW}remove{WHITE} – Removes last messages")
+            print(f" {YELLOW}break{WHITE} – Exit chat mode")
+            cf = Cloudflare()
+
+            while True:
+                user_input = input(f"{CYAN}You:{RESET} ").strip()
+                message_lower = user_input.lower()
+
+                if message_lower.startswith("remove"):
+                    try:
+                        cf.messages.remove() # AI Message
+                        cf.messages.remove() # User message
+                        print(f"{GREEN}removed (2) message(s).{RESET}")
+                    except Exception as e:
+                        print(f"{YELLOW}Error:{RESET} {e}")
+                    continue
+
+                if message_lower == "break":
+                    break
+
+                response = cf.generate(user_input) or cf.generate(user_input)
+                if response: # Add the context
+                    cf.messages.add(role="user", content=user_input)
+                    cf.messages.add(role="assistant", content=response)
+                print(f"{WHITE}Bot:{RESET} {response}")
         else:
             print(f"{YELLOW}Invalid option, try again.{RESET}")
 
