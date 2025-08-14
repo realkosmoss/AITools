@@ -9,3 +9,4 @@
 - [perchance.org/ai-chat](https://perchance.org/ai-chat)
 - [deepai.org/chat/ai-code](https://deepai.org/chat/ai-code)
 - [toolbaz.com/writer/introduction-generator](https://toolbaz.com/writer/introduction-generator)
+- [playground.ai.cloudflare.com/](https://playground.ai.cloudflare.com/)
