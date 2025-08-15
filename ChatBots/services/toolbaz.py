@@ -143,7 +143,7 @@ class Models:
 
 class ToolBaz:
     def __init__(self):
-        self.session = requests.Session(impersonate="chrome")
+        self.session = requests.Session(impersonate="tor145")
         self.fp = Fingerprint(self.session)
 
         self.headers = {
