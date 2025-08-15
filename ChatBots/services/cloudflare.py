@@ -151,7 +151,7 @@ class Payload:
     
 class Cloudflare:
     def __init__(self):
-        self.session = requests.Session(impersonate="chrome", headers=headers)
+        self.session = requests.Session(impersonate="tor145", headers=headers)
         self.session.get("https://playground.ai.cloudflare.com/")
         
         self.id = hm()
@@ -221,7 +221,7 @@ class Cloudflare:
 if __name__ == "__main__":
     cf = Cloudflare()
     response = cf.generate(
-        "Hello!",
+        prompt="Hello!",
         max_tokens=690,
         model=Models.llama_4_scout_17b_16e_instruct,
         stream=True,
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     print(response)
     # or just
     response = cf.generate(
-        "Hello!",
+        prompt="Hello!",
         model=Models.llama_4_scout_17b_16e_instruct,
     )
     print(response)
