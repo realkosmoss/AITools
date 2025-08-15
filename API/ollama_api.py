@@ -113,14 +113,12 @@ def chat(data: classes.ChatRequest):
         deepai.model = model_attr
         result = selected_service.generate(prompt=prompt.content)
     elif selected_service == cloudflare:
+        cloudflare.messages.messages = messages
         real_model = selected_model_value.split("/")[-1]
         real_model = re.sub(r"\.", "_", real_model)
         real_model = real_model.replace("-", "_")
         model_attr = getattr(CFModels, real_model)
         result = selected_service.generate(prompt=prompt.content, api=False, model=model_attr) or selected_service.generate(prompt=prompt.content, api=False, model=model_attr)
-    elif selected_service == toolbaz:
-        model_attr = getattr(TBModels, data.model)
-        result = selected_service.generate(prompt=prompt.content, model=model_attr)
     total_time = time.time_ns() - time_start
     response_json = {
         "model": data.model,
