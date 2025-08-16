@@ -1,5 +1,7 @@
 # AITools
 
+this code fucking sucks
+
 ### Image generators
 - [vheer.com/ai-text-to-image](https://vheer.com/ai-text-to-image)
 - [writecream.com/ai-image-generator-free-no-sign-up](https://writecream.com/ai-image-generator-free-no-sign-up/)
